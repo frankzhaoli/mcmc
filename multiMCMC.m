@@ -22,6 +22,7 @@ proprnd=@(x) normrnd(mean, sd, 1, dim);
 %gather samples, returns size [sampleSize dim]
 sample=mhsample(start, sampleSize, 'logpdf', pdf, 'proppdf', proppdf, 'proprnd', proprnd);
 
+%display expected covariance of samples and determinant of covariance
 c=cov(sample)
 determinant=det(c)
 f(determinant)

@@ -27,6 +27,7 @@ for i=1:sampleSize
     sam=sample(1:i, 1);
     temp(i)=f(var(sam));
 end
+%display expected variance of samples
 variance=var(sample);
 %analytic value
 analyticVal=f(sd^2);
