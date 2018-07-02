@@ -32,7 +32,7 @@ temp=zeros(sampleSize, 1);
 for i=1:sampleSize
     %calculate covariance and determinant of preceding samples
     sam=sample(1:i, :);
-    size(sam)
+    size(sam);
     co=cov(sam);
     d=det(co);
     temp(i)=f(d);

@@ -3,7 +3,7 @@
 f=@(x) exp(1).^(-x.^2);
 
 %initialization
-sampleSize=5000;
+sampleSize=10000;
 a=-5;
 b=5;
 r=b-a;
@@ -31,7 +31,7 @@ for i=1:sampleSize
     temp(i)=prod(sum(f(sam))/i*r);
 end
 %analytic value
-analyticVal=integral(f, a, b)^dim;
+analyticVal=sqrt(pi)^dim;
 
 %plotting f(x) at each sample
 figure;
