@@ -1,6 +1,7 @@
 %Multivariate MCMC
-%function for analytic value
+%function to estimate
 f=@(x) exp(1).^(-x.^2);
+%f=@(x) normpdf(x);
 
 %initialization
 sampleSize=10000;
@@ -8,7 +9,7 @@ a=-5;
 b=5;
 r=b-a;
 %dimensions>1
-dim=4;
+dim=3;
 mean=0;
 sd=1;
 start=zeros(1, dim);
@@ -20,10 +21,11 @@ pdf=@(x) mvnpdf(x, zeros(1,dim), eye(dim));
 %proposal pdf, [chainSize 1] vector
 proppdf=@(x,y) prod(mvnpdf(mean, sd));
 %random number generator, [chainSize dim] matrix
-proprnd=@(x) unifrnd(a, b, 1, dim); %normrnd(mean, sd, 1, dim);
+proprnd=@(x) unifrnd(a, b, 1, dim);
 
 %gather samples, returns size [sampleSize dim]
-sample=mhsample(start, sampleSize, 'logpdf', pdf, 'proppdf', proppdf, 'proprnd', proprnd);
+[sample, accept]=mhsample(start, sampleSize, 'logpdf', pdf, 'proppdf', proppdf, 'proprnd', proprnd);
+accept
 
 %for each sample
 for i=1:sampleSize
@@ -32,6 +34,7 @@ for i=1:sampleSize
 end
 %analytic value
 analyticVal=sqrt(pi)^dim;
+%analyticVal=integral(f, a, b)^dim;
 
 %plotting f(x) at each sample
 figure;
