@@ -2,7 +2,7 @@
 % MI-based optimization of parameter space using fminsearch
 % MI calculated by Gauss-Hermite quadrature
 
-function [MI]=MI_QALAS_objfun(pdv)
+function [MI, MIimg]=MI_QALAS_objfun(pdv)
 
 %% Load Input Parameters
 load MI_QALAS_objfun_kernel_input.mat;
