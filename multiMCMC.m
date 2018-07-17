@@ -41,8 +41,8 @@ end
 sdi=eye(dim)*sd^2;
 analyticVal=f(det(sdi));
 
-%figure;
-%hist(sample, 50);
+figure;
+hist(sample, 50);
 
 %plotting f(x) at each sample
 figure;
