@@ -1,15 +1,14 @@
 %Univariate MCMC
-clear
-
 %function for analytic value
 f=@(x) .5*log(2*pi*exp(1)*(x));
 
 %initialization
 sampleSize=10000;
 mean=0;
-sd=2;
+sd=1;
+samplesStopped=0;
 %target distribution
-pdf=@(x) normpdf(x, mean, sd+.1);
+pdf=@(x) normpdf(x, mean, sd);
 %proposal pdf
 proppdf=@(x, y) normpdf(x, mean, sd);
 %random number generator

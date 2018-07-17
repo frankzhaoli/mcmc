@@ -1,48 +1,40 @@
 %Multivariate MCMC
-%function for analytic value
-f=@(x) .5*log(2*pi*exp(1)*(x));
+%function to estimate
+f=@(x) exp(1).^(-x.^2);
+%f=@(x) normpdf(x);
 
 %initialization
-sampleSize=5000;
+sampleSize=10000;
+a=-5;
+b=5;
+r=b-a;
 %dimensions>1
-dim=10;
+dim=3;
 mean=0;
 sd=1;
 start=zeros(1, dim);
+%temp to hold samples
+temp=zeros(sampleSize, 1);
 
 %target distribution, [chainSize 1] vector
 pdf=@(x) mvnpdf(x, zeros(1,dim), eye(dim));
 %proposal pdf, [chainSize 1] vector
 proppdf=@(x,y) prod(mvnpdf(mean, sd));
 %random number generator, [chainSize dim] matrix
-proprnd=@(x) normrnd(mean, sd, 1, dim);
+proprnd=@(x) unifrnd(a, b, 1, dim);
 
 %gather samples, returns size [sampleSize dim]
-sample=mhsample(start, sampleSize, 'logpdf', pdf, 'proppdf', proppdf, 'proprnd', proprnd);
-
-%display expected covariance of samples and determinant of covariance
-c=cov(sample);
-determinant=det(c)
-f(determinant)
-
-%initialize temp to hold samples
-temp=zeros(sampleSize, 1);
+[sample, accept]=mhsample(start, sampleSize, 'logpdf', pdf, 'proppdf', proppdf, 'proprnd', proprnd);
+accept
 
 %for each sample
 for i=1:sampleSize
-    %calculate covariance and determinant of preceding samples
     sam=sample(1:i, :);
-    size(sam);
-    co=cov(sam);
-    d=det(co);
-    temp(i)=f(d);
+    temp(i)=prod(sum(f(sam))/i*r);
 end
 %analytic value
-sdi=eye(dim)*sd^2;
-analyticVal=f(det(sdi));
-
-figure;
-hist(sample, 50);
+analyticVal=sqrt(pi)^dim;
+%analyticVal=integral(f, a, b)^dim;
 
 %plotting f(x) at each sample
 figure;
