@@ -5,6 +5,7 @@ sampleSize=100;
 dim=9;
 i=1; j=1;
 eta=zeros(1, dim);
+acceptance=0;
 
 ksrtemp=zeros(5, 151, 181);
 ksitemp=zeros(5, 151, 181);
@@ -19,10 +20,12 @@ tsigma=eta_target(:, 2);
 samples=zeros(sampleSize, dim);
 MItemp=zeros(1, sampleSize);
 
+%{
 %to store vals causing -Inf
 infeta=zeros(100, 9);
 infksr=zeros(5, 151, 181);
 infksi=zeros(5, 151, 181);
+%}
 
 while i<sampleSize
     %increment
@@ -31,7 +34,7 @@ while i<sampleSize
     for j=1:dim
         %sample from proposal probability distribution
         sample=normrnd(samples(i-1, j), psigma(j));
-        samples(i, j)=metHas(sample, samples(i-1, j), tmu(j), .5);
+        [samples(i, j), acceptance]=metHas(sample, samples(i-1, j), tmu(j), .5, acceptance);
     end
     %set positive eta values
     eta=abs(samples(i, :));
@@ -43,6 +46,7 @@ while i<sampleSize
     [MI, ~]=calcMI(ksrtemp, ksitemp, i);
     MItemp(i)=MI;
     
+    %{
     if isinf(MI)
         infksr=ksrtemp;
         infksi=ksitemp;
@@ -50,13 +54,14 @@ while i<sampleSize
         j=j+1;
         break;
     end
+    %}
 end
 
 [MI, MIimg]=calcMI(ksrtemp, ksitemp, sampleSize);
 
 %display img
-figure;
-imagesc(squeeze(MIimg(1, :, :)));
+%figure;
+%imagesc(squeeze(MIimg(1, :, :)));
 
 %plot MI at each sampleSize
 figure;
@@ -71,6 +76,7 @@ xlabel('Sample Size');
 legend({strcat('AV: ', num2str(analyticVal))}, 'FontSize', 12, 'TextColor', 'blue')
 
 %display histogram of samples
+%{
 figure;
 for i=1:dim
     subplot(4, 4, i);
@@ -79,9 +85,10 @@ for i=1:dim
     title(strcat('tmu: ', num2str(tmu(i)), ' tsigma: ', num2str(tsigma(i))));
     xlabel(strcat('std: ', num2str(std(samples(:, i))), ' mean: ', num2str(mean(samples(:, i)))));
 end
+%}
 
 %Metropolis-Hastings Algo
-function val=metHas(sample, prev, mu, sigma)
+function [val, acceptance]=metHas(sample, prev, mu, sigma, acceptance)
     %target distribution
     tpdf=@(x) normpdf(x, mu, sigma);
     %proposal distribution
@@ -96,6 +103,7 @@ function val=metHas(sample, prev, mu, sigma)
     if (r<=alpha)
         %accept proposal
         val=sample;
+        acceptance=acceptance+1;
     else
         %decline proposal
         val=prev;
