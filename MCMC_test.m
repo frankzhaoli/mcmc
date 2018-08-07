@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 %ORIGINAL
 
 %init
@@ -98,8 +97,6 @@ ylabel('Entropy');
 xlabel('Sample Size');
 legend({strcat('Est Val: ', num2str(valSum))}, 'FontSize', 12, 'TextColor', 'blue')
 
-=======
-
 H=9.218;
 sampleSize=10000;
 i=1;
@@ -175,4 +172,3 @@ function [val]=metHas(sample, prev, mu, sigma)
         val=prev;
     end
 end
->>>>>>> a8d0114afb57bfa8c448ceb81ab71766409e904a
