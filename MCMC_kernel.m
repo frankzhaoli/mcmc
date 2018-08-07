@@ -7,8 +7,8 @@ i=1; j=1;
 eta=zeros(1, dim);
 acceptance=0;
 
-ksrtemp=zeros(5, 151, 181);
-ksitemp=zeros(5, 151, 181);
+ksrtemp=0;
+ksitemp=0;
 
 %prior mean and sd
 pmu=eta_prior(:, 1)';
