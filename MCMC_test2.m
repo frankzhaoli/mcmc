@@ -4,12 +4,10 @@
 H=9.218;
 sampleSize = 5000;
 dim = 9;
-chains=3;
 burn=100;
-start = zeros(chains, dim);
+ent=0;
+start = zeros(1, dim);
 valArray=zeros(sampleSize, 1);
-valArray2=zeros(sampleSize, 1);
-valArray3=zeros(sampleSize, 1);
 
 mu=[1, 2, 3, 1, 2, 3, 1, 2, 3];
 sigma=[.5, .5, .5, .25, .25, .25, .75, .75, .75];
@@ -19,27 +17,16 @@ pdf=@(x) mvnpdf(x, mu, sigma);
 %proposal pdf, [chainSize 1] vector
 proppdf=@(x,y) prod(unifpdf(y-x, -delta, delta), 2);
 %random number generator, [chainSize dim] matrix
-proprnd=@(x) x + rand(chains, dim)*2*delta - delta;
+proprnd=@(x) x + rand(1, dim)*2*delta - delta;
 %Met-Hast matlab function
-sample=mhsample(start, sampleSize, 'pdf', pdf, 'proppdf', proppdf, 'proprnd', proprnd, 'nchain', chains);
+sample=mhsample(start, sampleSize, 'pdf', pdf, 'proppdf', proppdf, 'proprnd', proprnd);
 
+%Calculate average value
 for i=1:sampleSize
-    sam=sample(1:i, :, 1);
-    val=log(det(2*pi*exp(1)*cov(sam)))/2;
-    valArray(i)=real(val);
-    
-    sam=sample(1:i, :, 2);
-    val=log(det(2*pi*exp(1)*cov(sam)))/2;
-    valArray2(i)=real(val);
-    
-    sam=sample(1:i, :, 3);
-    val=log(det(2*pi*exp(1)*cov(sam)))/2;
-    valArray3(i)=real(val);
-    
+    ent=ent+log(mvnpdf(sample(i, :), mu, sigma))*(-1);
+    valArray(i)=ent/i;
 end
-%Function value from all samples
-val=log(det(2*pi*exp(1)*cov(sam)))/2;
-valSum=sum(valArray(burn:sampleSize))/(sampleSize-burn)
+ent=ent/sampleSize;
 
 %Show histogram
 %figure;
@@ -49,10 +36,9 @@ valSum=sum(valArray(burn:sampleSize))/(sampleSize-burn)
 figure;
 hold on;
 plot(1:sampleSize, valArray);
-plot(1:sampleSize, valArray2);
-plot(1:sampleSize, valArray3);
 plot([0 sampleSize], [H H]);
 hold off;
 ylabel('Entropy');
 xlabel('Sample Size');
-legend({strcat('AV: ', num2str(valSum))}, 'FontSize', 12, 'TextColor', 'blue');
+ylim([8 20]);
+legend(num2str(ent));
